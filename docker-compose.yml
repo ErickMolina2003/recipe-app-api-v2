@@ -1,0 +1,23 @@
+# version de docker compose syntax que estamos usando
+version: "3.9"
+
+services:
+# nombre del servicio
+  app:
+# donde lo construimos el docker file en la ruta directorio con el punto, context
+    build:
+      context: .
+# setear el build ed la imagen como development
+      args:
+        - DEV=true
+# los puertos de nuestra maquina puerto 8000 al puerto imagen 8000
+    ports:
+      - "8000:8000"
+# mapeamos directorio app de nuestro sistema del proyecto al directorio app dentro de nuestro container
+  # esto hace que los updates de codigo que hacemos en nuestro proyecto local, verlos reflejados en el running container
+    # en tiempo real sin hacer rebuild cada vez que hagamos cambios
+    volumes:
+      - ./app:/app
+# este es el comando que es usado para correr el servicio
+    command: >
+      sh -c "python manage.py runserver 0.0.0.0:8000"
