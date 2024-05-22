@@ -20,7 +20,9 @@ services:
       - ./app:/app
 # este es el comando que es usado para correr el servicio
     command: >
-      sh -c "python manage.py runserver 0.0.0.0:8000"
+      sh -c "python manage.py wait_for_db &&
+             python manage.py migrate &&
+             python manage.py runserver 0.0.0.0:8000"
 # el host del db es el mismo servicio 'db'
     environment:
       - DB_HOST=db
