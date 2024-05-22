@@ -18,9 +18,13 @@ EXPOSE 8000
 # corre un comando en la imagen alpine cuando construimos la imagen
 # 1. python -m venv crea un ambiente virtual
 # 2. especificamos el path de nuestro ambiente virtual y instalar pip para manejar dependencias, el node de python
+     # 2.1 para agregar la base de datos, agregamos el apk de postgresql-client para que corra la base de datos
+    # 2.2 luego agregamos otro apk pero en un ambiente virtual y en una carpeta llamada .tmp-build-deps y en esta
+        # carpeta instalamos dependencias para la base ed datos (build base, musl, etc)
 # 3. despues instalamos nuestros requirements, los cuales copiamos con COPY ./requirements.txt y pusimos en /tmp/requirements.txt
     # 3.2 instalamos de la misma forma los requirements pero de dev pero usando un condicional shell solo si Dev=true
 # 4. removemos el directorio /tmp para no tener dependencias extras al crear la imagen
+    # 4.1 y removemos tambien el directorio del apk tmp-build-deps que se uso para instalar dependencias de base de datos
 # 5. agregamos un usuario en nuestra imagen para no tener que usar el root user porque no es buena practica por seguridad
 # 6. ENV actualiza las env variables dentro de la imagen y actualiza el path env variables, para que cuando corramos
 #     comandos, sepan donde estan las env variables de la imagen
@@ -30,11 +34,15 @@ EXPOSE 8000
 ARG DEV=false
 RUN python -m venv /py && \
     /py/bin/pip install --upgrade pip && \
+    apk add --update --no-cache postgresql-client && \
+    apk add --update --no-cache --virtual .tmp-build-deps \
+        build-base postgresql-dev musl-dev && \
     /py/bin/pip install -r /tmp/requirements.txt && \
     if [ $DEV = "true" ]; \
         then /py/bin/pip install -r /tmp/requirements.dev.txt ; \
     fi && \
     rm -rf /tmp && \
+    apk del .tmp-build-deps && \
     adduser \ 
         --disabled-password \
         --no-create-home \
