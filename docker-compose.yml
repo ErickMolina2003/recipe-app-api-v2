@@ -21,3 +21,28 @@ services:
 # este es el comando que es usado para correr el servicio
     command: >
       sh -c "python manage.py runserver 0.0.0.0:8000"
+# el host del db es el mismo servicio 'db'
+    environment:
+      - DB_HOST=db
+      - DB_NAME=devdb
+      - DB_USER=devuser
+      - DB_PASS=changeme
+# el servicio app depende del servicio db por tanto se va correr despues del servicio db
+    depends_on:
+      - db
+  
+# nombre del servicio
+  db:
+# imagen de docker hub
+    image: postgres:13-alpine
+# definir la data de la base de datos
+    volumes:
+      - dev-db-data:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_DB=devdb
+      - POSTGRES_USER=devuser
+      - POSTGRES_PASSWORD=changeme
+
+# definir la data de la base de datos
+volumes:
+  dev-db-data:
