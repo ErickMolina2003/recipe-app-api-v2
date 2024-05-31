@@ -192,7 +192,7 @@ class PrivateRecipeAPITests(TestCase):
 
         url = detail_url(recipe.id)
 
-        res = self.client.patch(url, payload)
+        self.client.patch(url, payload)
         recipe.refresh_from_db()
         self.assertEqual(recipe.user, self.user)
 
@@ -209,7 +209,8 @@ class PrivateRecipeAPITests(TestCase):
 
     def test_recipe_other_users_recipe_error(self):
         """Test trying to delete another users recipe gives error"""
-        new_user = create_user(email='admin@example.com', password='testpasas123')
+        new_user = create_user(email='admin@example.com',
+                               password='testpasas123')
 
         recipe = create_recipe(user=new_user)
         url = detail_url(recipe.id)
