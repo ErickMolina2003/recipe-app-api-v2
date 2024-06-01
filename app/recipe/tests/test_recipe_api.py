@@ -266,3 +266,54 @@ class PrivateRecipeAPITests(TestCase):
                 user=self.user,
             ).exists()
             self.assertTrue(exists)
+
+    def test_create_tag_on_update(self):
+        """Test creating a tag when updating a recipe"""
+        recipe = create_recipe(user=self.user)
+
+        payload = {
+            'tags': [{'name': 'tag 1'}]
+        }
+        url = detail_url(recipe.id)
+        res = self.client.patch(url, payload, format='json')
+
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+        new_tag = Tag.objects.get(user=self.user, name='tag 1')
+        self.assertIn(new_tag, recipe.tags.all())
+
+    def test_update_recipe_assign_tag(self):
+        """Test asigning an existing tag when udpating a recipe"""
+        tag_breakfrast = Tag.objects.create(user=self.user, name='Breakfast')
+        recipe = create_recipe(user=self.user)
+        tag_lunch = Tag.objects.create(user=self.user, name='Lunch')
+        recipe.tags.add(tag_lunch)
+
+        payload = {
+            'tags': [{'name': 'Breakfast'}]
+        }
+        url = detail_url(recipe.id)
+        res = self.client.patch(url, payload, format='json')
+
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+        self.assertIn(tag_breakfrast, recipe.tags.all())
+        self.assertNotIn(tag_lunch, recipe.tags.all())
+
+    def test_clear_recipe_tags(self):
+        """Test clearing a recipe tags"""
+        recipe = create_recipe(user=self.user)
+        tag = Tag.objects.create(user=self.user, name='tag 1')
+        tag2 = Tag.objects.create(user=self.user, name='tag 2')
+        recipe.tags.add(tag)
+        recipe.tags.add(tag2)
+
+        payload = {
+            'tags': []
+        }
+
+        url = detail_url(recipe.id)
+        res = self.client.patch(url, payload, format='json')
+
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+        self.assertNotIn(tag, recipe.tags.all())
+        self.assertNotIn(tag2, recipe.tags.all())
+        self.assertEqual(recipe.tags.count(), 0)
