@@ -325,7 +325,8 @@ class PrivateRecipeAPITests(TestCase):
             'title': 'recipe 1',
             'time_minutes': 60,
             'price': Decimal('4.30'),
-            'ingredients': [{'name': 'Ingredient 1'}, {'name': 'Ingredient 2'}],
+            'ingredients': [{'name': 'Ingredient 1'},
+                            {'name': 'Ingredient 2'}],
         }
         res = self.client.post(RECIPES_URL, payload, format='json')
 
@@ -349,7 +350,8 @@ class PrivateRecipeAPITests(TestCase):
             'title': 'recipe 1',
             'time_minutes': 60,
             'price': Decimal('4.30'),
-            'ingredients': [{'name': 'Ingredient 1'}, {'name': 'Ingredient 2'}],
+            'ingredients': [{'name': 'Ingredient 1'},
+                            {'name': 'Ingredient 2'}],
         }
         res = self.client.post(RECIPES_URL, payload, format='json')
 
