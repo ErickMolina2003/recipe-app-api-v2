@@ -26,6 +26,8 @@ EXPOSE 8000
 # 4. removemos el directorio /tmp para no tener dependencias extras al crear la imagen
     # 4.1 y removemos tambien el directorio del apk tmp-build-deps que se uso para instalar dependencias de base de datos
 # 5. agregamos un usuario en nuestra imagen para no tener que usar el root user porque no es buena practica por seguridad
+# 5.1 agregamos directorios /vol/web/media y /static para almacenar imagenes y le asignamos el usuario django user con chown y los permisos
+    # con chmod
 # 6. ENV actualiza las env variables dentro de la imagen y actualiza el path env variables, para que cuando corramos
 #     comandos, sepan donde estan las env variables de la imagen
 
@@ -46,7 +48,11 @@ RUN python -m venv /py && \
     adduser \ 
         --disabled-password \
         --no-create-home \
-        django-user
+        django-user && \
+    mkdir -p /vol/web/media && \
+    mkdir -p /vol/web/static && \
+    chown -R django-user:django-user /vol && \
+    chmod -R 755 /vol
 
 ENV PATH="/py/bin:$PATH"
 

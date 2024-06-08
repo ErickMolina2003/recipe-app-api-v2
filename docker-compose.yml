@@ -18,6 +18,7 @@ services:
     # en tiempo real sin hacer rebuild cada vez que hagamos cambios
     volumes:
       - ./app:/app
+      - dev-static-data:/vol/web
 # este es el comando que es usado para correr el servicio
     command: >
       sh -c "python manage.py wait_for_db &&
@@ -48,3 +49,4 @@ services:
 # definir la data de la base de datos
 volumes:
   dev-db-data:
+  dev-static-data:
