@@ -107,7 +107,8 @@ class PrivateIngredientsAPITests(TestCase):
         ingredient1 = Ingredient.objects.create(user=self.user, name='Apple')
         ingredient2 = Ingredient.objects.create(user=self.user, name='Turkey')
         recipe = Recipe.objects.create(
-            user=self.user, title='recipe1', time_minutes=5, price=Decimal('5.0'))
+            user=self.user, title='recipe1',
+            time_minutes=5, price=Decimal('5.0'))
         recipe.ingredients.add(ingredient1)
 
         res = self.client.get(INGREDIENTS_URL, {'assigned_only': 1})
@@ -122,9 +123,11 @@ class PrivateIngredientsAPITests(TestCase):
         ingredient = Ingredient.objects.create(user=self.user, name='Apple')
         Ingredient.objects.create(user=self.user, name='Pear')
         recipe1 = Recipe.objects.create(
-            user=self.user, title='recipe1', time_minutes=5, price=Decimal('5.0'))
+            user=self.user, title='recipe1',
+            time_minutes=5, price=Decimal('5.0'))
         recipe2 = Recipe.objects.create(
-            user=self.user, title='recipe2', time_minutes=15, price=Decimal('15.0'))
+            user=self.user, title='recipe2',
+            time_minutes=15, price=Decimal('15.0'))
 
         recipe1.ingredients.add(ingredient)
         recipe2.ingredients.add(ingredient)

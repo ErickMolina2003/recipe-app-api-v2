@@ -104,7 +104,8 @@ class PrivateTagsAPITests(TestCase):
         tag1 = Tag.objects.create(user=self.user, name='Apple')
         tag2 = Tag.objects.create(user=self.user, name='Turkey')
         recipe = Recipe.objects.create(
-            user=self.user, title='recipe1', time_minutes=5, price=Decimal('5.0'))
+            user=self.user, title='recipe1',
+            time_minutes=5, price=Decimal('5.0'))
         recipe.tags.add(tag1)
 
         res = self.client.get(TAGS_URL, {'assigned_only': 1})
@@ -119,9 +120,11 @@ class PrivateTagsAPITests(TestCase):
         tag = Tag.objects.create(user=self.user, name='Apple')
         Tag.objects.create(user=self.user, name='Pear')
         recipe1 = Recipe.objects.create(
-            user=self.user, title='recipe1', time_minutes=5, price=Decimal('5.0'))
+            user=self.user, title='recipe1',
+            time_minutes=5, price=Decimal('5.0'))
         recipe2 = Recipe.objects.create(
-            user=self.user, title='recipe2', time_minutes=15, price=Decimal('15.0'))
+            user=self.user, title='recipe2',
+            time_minutes=15, price=Decimal('15.0'))
 
         recipe1.tags.add(tag)
         recipe2.tags.add(tag)
