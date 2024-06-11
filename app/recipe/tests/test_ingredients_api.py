@@ -6,8 +6,13 @@ from django.urls import reverse
 from django.test import TestCase
 from rest_framework import status
 from rest_framework.test import APIClient
-from core.models import Ingredient
+from core.models import (
+    Ingredient,
+    Recipe,
+)
 from recipe.serializers import IngredientSerializer
+from decimal import Decimal
+
 
 INGREDIENTS_URL = reverse('recipe:ingredient-list')
 
@@ -96,3 +101,34 @@ class PrivateIngredientsAPITests(TestCase):
         ingredients = Ingredient.objects.filter(user=self.user)
         self.assertEqual(len(ingredients), 0)
         self.assertFalse(ingredients.exists())
+
+    def test_filter_ingredients_assigned_to_recipes(self):
+        """Listing ingredients to those assigned to recipes"""
+        ingredient1 = Ingredient.objects.create(user=self.user, name='Apple')
+        ingredient2 = Ingredient.objects.create(user=self.user, name='Turkey')
+        recipe = Recipe.objects.create(
+            user=self.user, title='recipe1', time_minutes=5, price=Decimal('5.0'))
+        recipe.ingredients.add(ingredient1)
+
+        res = self.client.get(INGREDIENTS_URL, {'assigned_only': 1})
+
+        s1 = IngredientSerializer(ingredient1)
+        s2 = IngredientSerializer(ingredient2)
+        self.assertIn(s1.data, res.data)
+        self.assertNotIn(s2.data, res.data)
+
+    def test_filterred_ingredients_unique(self):
+        """Test filtered ingreients return a unique list"""
+        ingredient = Ingredient.objects.create(user=self.user, name='Apple')
+        Ingredient.objects.create(user=self.user, name='Pear')
+        recipe1 = Recipe.objects.create(
+            user=self.user, title='recipe1', time_minutes=5, price=Decimal('5.0'))
+        recipe2 = Recipe.objects.create(
+            user=self.user, title='recipe2', time_minutes=15, price=Decimal('15.0'))
+
+        recipe1.ingredients.add(ingredient)
+        recipe2.ingredients.add(ingredient)
+
+        res = self.client.get(INGREDIENTS_URL, {'assigned_only': 1})
+
+        self.assertEqual(len(res.data), 1)
