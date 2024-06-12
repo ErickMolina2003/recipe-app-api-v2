@@ -30,6 +30,7 @@ services:
       - DB_NAME=devdb
       - DB_USER=devuser
       - DB_PASS=changeme
+      - DEBUG=1
 # el servicio app depende del servicio db por tanto se va correr despues del servicio db
     depends_on:
       - db
